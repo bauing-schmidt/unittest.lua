@@ -1,0 +1,6 @@
+
+install:
+	cp src/unittest.lua /usr/local/share/lua/5.4/
+
+test:
+	lua test/test.lua
