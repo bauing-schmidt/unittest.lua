@@ -3,23 +3,38 @@ local unittest = require 'unittest'
 
 local traits = {
     
-    setup = function (recv) recv.test = unittest.wasrun 'test_method' end,
-
-    test_running = function (recv)
-        local test = recv.test
-        assert (not test.wasrun)
+    test_template_method = function (recv)
+        local test = unittest.wasrun 'test_method'
         test:run ()
-        assert (test.wasrun)
+        assert (test:logstring () == 'setup test_method teardown')
     end,
 
-    test_setup = function (recv)
-        local test = recv.test
-        test:run ()
-        assert (test.wassetup)
+    test_result = function (recv)
+
+        local test = unittest.wasrun 'test_method'
+        local result = test:run ()
+        assert ('1 run, 0 failed.' == result:summary ())
+
     end,
+
+    test_failed_result = function (recv)
+
+        local test = unittest.wasrun 'test_broken_method'
+        local result = test:run ()
+        assert ('1 run, 1 failed.' == result:summary ())
+
+    end,
+
+    test_failedresultformatting = function (recv)
+
+        local result = unittest.new_result ()
+        result:started ()
+        result:failed ()
+        assert (result:summary () == '1 run, 1 failed.')
+
+    end
 
 }
-
 
 local function case (name)
     local c = unittest.case (name)
@@ -37,5 +52,7 @@ local function case (name)
     return c
 end
 
-case "test_running":run ()
-case "test_setup":run ()
+case "test_template_method":run ()
+case "test_result":run ()
+case "test_failed_result":run ()
+case "test_failedresultformatting":run ()
