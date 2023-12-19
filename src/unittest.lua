@@ -4,12 +4,16 @@ local unittest = {}
 unittest.traits = {
 
     testcase = {
-        run = function (recv) return recv[recv.name] () end
+        run = function (recv) 
+            recv:setup ()
+            return recv[recv.name] (recv) 
+        end,
+        setup = function (recv) end,
     }
 
 }
 
-function unittest.test_case (name) 
+function unittest.case (name) 
 
     local t = {}
 
@@ -27,12 +31,15 @@ end
 
 function unittest.wasrun (name)
     
-    local t = unittest.test_case (name)
+    local t = unittest.case (name)
 
-    t.wasrun = false
-    
-    t.test_method = function () t.wasrun = true end
-    
+    function t.test_method (recv) recv.wasrun = true end
+
+    function t.setup (recv)
+        recv.wasrun = false
+        recv.wassetup = true 
+    end
+
     return t
 end
 

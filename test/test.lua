@@ -1,14 +1,30 @@
 
 local unittest = require 'unittest'
 
-local case = unittest.test_case "test_running"
+do
+    local case = unittest.case "test_running"
 
-function case.test_running ()
-    local test = unittest.wasrun 'test_method'
+    function case.test_running ()
+        local test = unittest.wasrun 'test_method'
 
-    assert (not test.wasrun, 'before')
-    test:run ()
-    assert (test.wasrun, 'after')
-end    
+        assert (not test.wasrun, 'before')
+        test:run ()
+        assert (test.wasrun, 'after')
+    end    
 
-case:run()
+    case:run()
+end
+
+do
+    local case = unittest.case "test_setup"
+
+    function case.test_setup ()
+        local test = unittest.wasrun 'test_method'
+
+        test:run ()
+        assert (test.wassetup)
+    end    
+
+    case:run()
+end
+
