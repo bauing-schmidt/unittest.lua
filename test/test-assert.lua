@@ -37,10 +37,10 @@ function tests.test_msg ()
   2
 Actual:
   1]])
-  
+
 end
 
-local result = unittest.run (tests)
-print (result:summary ())
+--local result = unittest.run (tests)
+-- print (result:summary ())
 
 return tests
