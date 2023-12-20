@@ -73,4 +73,5 @@ function tests.test_api_run (recv, result)
 
 end
 
-unittest.run (tests)
+local result = unittest.run (tests)
+print (result:summary ())

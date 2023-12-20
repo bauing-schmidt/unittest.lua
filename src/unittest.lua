@@ -162,8 +162,6 @@ function unittest.run (tests, result)
 
     result = result or unittest.new_result ()
     unittest.suite (tests):run (result)
-    print (result:summary ())
-
     return result
 end
 

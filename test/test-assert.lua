@@ -34,4 +34,5 @@ function tests.test_assert_same (recv)
 end
 
 
-unittest.run (tests)
+local result = unittest.run (tests)
+print (result:summary ())
