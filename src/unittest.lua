@@ -126,31 +126,31 @@ function unittest.cases ()
 end
 
 
-local function case (name, trait)
-    local c = unittest.case (name)
-
-    local __index = getmetatable (c).__index
-
-    setmetatable (c, {
-
-        __index = function (recv, key) 
-            return trait[key] or __index (recv, key) 
-        end
-
-    })
-
-    return c
-end
-
-
 function unittest.suite (trait)
+
+
+    local function case_trait (name)
+        local c = unittest.case (name)
+
+        local __index = getmetatable (c).__index
+
+        setmetatable (c, {
+
+            __index = function (recv, key) 
+                return trait[key] or __index (recv, key) 
+            end
+
+        })
+
+        return c
+    end
 
 
     local cases = unittest.cases ()
 
     for name, test_f in pairs (trait) do 
         if (type(name) == 'string' and string.sub(name, 1, 4) == 'test') then
-            cases:append (case (name, trait))
+            cases:append (case_trait (name))
         end
     end
 
