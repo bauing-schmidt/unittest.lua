@@ -218,9 +218,35 @@ function eq_functions.eq_tbls (r, s)
 
 end
 
-function unittest.assert.same (a, b) return assert (eq_functions.same (a, b)) end
+local function tostring_recursive (obj, indent)
 
-function unittest.assert.equals (a, b) return assert (eq_functions.equals (a, b)) end
+    indent = indent or ''
+
+    if type(obj) == 'table' then
+        local s = indent
+        s = s .. '{\n'
+        for k, v in pairs (obj) do 
+            s = s .. indent .. tostring(k) .. ': \n'
+            s = s .. tostring_recursive (v, indent .. '  ')
+        end
+        s = s .. '\n}'
+        return s
+    else return tostring (obj) end
+
+end
+
+function unittest.assert.same (a, b) return assert (eq_functions.same (a, b), 
+    string.format([[
+Expected:
+  %s
+Actual:
+  %s]], tostring_recursive(b), tostring_recursive(a))) end
+
+function unittest.assert.equals (a, b) return assert (eq_functions.equals (a, b),  string.format([[
+Expected:
+  %s
+Actual:
+  %s]], tostring_recursive(b), tostring_recursive(a))) end
 
 unittest.deny = {
     equals = function (...) return assert (not eq_functions.equals (...)) end,

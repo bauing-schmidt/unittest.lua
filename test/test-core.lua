@@ -76,7 +76,7 @@ end
 
 function tests.test_api_files (recv)
     unittest.files {'test/test-assert.lua'} (recv.result)
-    unittest.assert.equals (recv.result:summary (), '4 run, 0 failed.')
+    unittest.assert.equals (recv.result:summary (), '5 run, 0 failed.')
 end
 
 local result = unittest.run (tests)
