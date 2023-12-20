@@ -158,6 +158,15 @@ function unittest.suite (trait)
 
 end
 
+function unittest.run (tests)
+
+    local result = unittest.new_result ()
+    unittest.suite (tests):run (result)
+    print (result:summary ())
+
+    return result
+end
+
 local function eq_tbls (r, s)
 
     local used = {}

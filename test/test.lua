@@ -1,73 +1,68 @@
 
 local unittest = require 'unittest'
 
-local traits = {
+local tests = {}
     
-    test_template_method = function (recv)
-        local test = unittest.wasrun 'test_method'
-        test:run (unittest.new_result ())
-        assert (test:logstring () == 'setup test_method teardown')
-    end,
+function tests.test_template_method (recv)
+    local test = unittest.wasrun 'test_method'
+    test:run (unittest.new_result ())
+    assert (test:logstring () == 'setup test_method teardown')
+end
 
-    test_result = function (recv)
+function tests.test_result (recv)
 
-        local test = unittest.wasrun 'test_method'
-        local result = unittest.new_result ()
-        test:run (result)
-        assert ('1 run, 0 failed.' == result:summary ())
+    local test = unittest.wasrun 'test_method'
+    local result = unittest.new_result ()
+    test:run (result)
+    assert ('1 run, 0 failed.' == result:summary ())
 
-    end,
+end
 
-    test_failed_result = function (recv)
+function tests.test_failed_result (recv)
 
-        local test = unittest.wasrun 'test_broken_method'
-        local result = unittest.new_result ()
-        test:run (result)
-        
-        assert (result:summary () == [[
+    local test = unittest.wasrun 'test_broken_method'
+    local result = unittest.new_result ()
+    test:run (result)
+    
+    assert (result:summary () == [[
 1 run, 1 failed.
 test_broken_method: /usr/local/share/lua/5.4/unittest.lua:85: explicitly raised.]])
 
-    end,
+end
 
-    test_failedresultformatting = function (recv)
+function tests.test_failedresultformatting (recv)
 
-        local result = unittest.new_result ()
-        local not_seen = result:started (recv)
-        result:failed ({name = 'test_dummy'}, 'no reason.')
-        
-        assert (not_seen)
-        assert (result:summary () == [[
+    local result = unittest.new_result ()
+    local not_seen = result:started (recv)
+    result:failed ({name = 'test_dummy'}, 'no reason.')
+    
+    assert (not_seen)
+    assert (result:summary () == [[
 1 run, 1 failed.
 test_dummy: no reason.]])
 
-    end,
+end
 
-    test_cases = function (recv)
+function tests.test_cases (recv)
 
-        local cases = unittest.cases ()
-        cases:append (unittest.wasrun 'test_method')
-        cases:append (unittest.wasrun 'test_broken_method')
-        local result = unittest.new_result ()
-        cases:run (result)
+    local cases = unittest.cases ()
+    cases:append (unittest.wasrun 'test_method')
+    cases:append (unittest.wasrun 'test_broken_method')
+    local result = unittest.new_result ()
+    cases:run (result)
 
-        assert (result:summary () == [[
+    assert (result:summary () == [[
 2 run, 1 failed.
 test_broken_method: /usr/local/share/lua/5.4/unittest.lua:85: explicitly raised.]])
 
-    end,
+end
 
-}
+function tests.test_suite (recv, result)
 
-function traits.test_suite (recv, result)
-
-    local suite = unittest.suite (traits)
+    local suite = unittest.suite (tests)
     suite:run (result)
     assert (result:summary () == '6 run, 0 failed.')
 
 end
 
-
-local result = unittest.new_result ()
-unittest.suite (traits):run (result)
-print (result:summary ())
+unittest.run (tests)
