@@ -180,7 +180,17 @@ end
 
 unittest.assert = {}
 
-local function eq_tbls (r, s)
+local eq_functions = {}
+
+function eq_functions.same (a, b) return a == b end
+
+function eq_functions.equals (a, b)
+    local atype = type(a)
+    if atype == 'table' and atype == type(b) then return eq_functions.eq_tbls (a, b)
+    else return eq_functions.same (a, b) end
+end
+
+function eq_functions.eq_tbls (r, s)
 
     local used = {}
 
@@ -190,9 +200,9 @@ local function eq_tbls (r, s)
 
         for kk, vv in pairs (s) do
 
-            if (not used[kk]) and unittest.assert.equals (k, kk) then 
+            if (not used[kk]) and eq_functions.equals (k, kk) then 
 
-                if unittest.assert.equals (v, vv) then missing = false; used[kk] = true end
+                if eq_functions.equals (v, vv) then missing = false; used[kk] = true end
 
             end
 
@@ -208,18 +218,13 @@ local function eq_tbls (r, s)
 
 end
 
+function unittest.assert.same (a, b) return assert (eq_functions.same (a, b)) end
 
-function unittest.assert.same (a, b) return a == b end
-
-function unittest.assert.equals (a, b)
-    local atype = type(a)
-    if atype == 'table' and atype == type(b) then return eq_tbls (a, b) 
-    else return unittest.assert.same (a, b) end
-end
+function unittest.assert.equals (a, b) return assert (eq_functions.equals (a, b)) end
 
 unittest.deny = {
-    equals = function (...) return not unittest.assert.equals (...) end,
-    same = function (...) return not unittest.assert.same (...) end
+    equals = function (...) return assert (not eq_functions.equals (...)) end,
+    same = function (...) return assert (not eq_functions.same (...)) end
 }
 
 return unittest
