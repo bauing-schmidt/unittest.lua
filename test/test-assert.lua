@@ -16,6 +16,7 @@ function tests.test_assert_equals_tables (recv)
     assert(unittest.assert.equals ({}, {}))
     assert(unittest.assert.equals ({1,2,3}, {1,2,3}))
     assert(unittest.assert.equals ({{}}, {{}}))
+    assert(unittest.assert.equals ({[{}] = 'hello', [{}] = 'world'}, {[{}] = 'world', [{}] = 'hello'}))
 
 end
 
@@ -36,3 +37,5 @@ end
 
 local result = unittest.run (tests)
 print (result:summary ())
+
+return tests

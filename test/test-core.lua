@@ -61,7 +61,7 @@ function tests.test_suite (recv, result)
 
     local suite = unittest.suite (tests)
     suite:run (result)
-    assert (result:summary () == '7 run, 0 failed.')
+    assert (result:summary () == '8 run, 0 failed.')
 
 end
 
@@ -69,7 +69,15 @@ end
 function tests.test_api_run (recv, result)
 
     unittest.run (tests, result)
-    assert (result:summary () == '7 run, 0 failed.')
+    assert (result:summary () == '8 run, 0 failed.')
+
+end
+
+
+function tests.test_api_files (recv)
+
+    local result = unittest.files {'test/test-assert.lua'} ()
+    assert (result:summary () == '4 run, 0 failed.')
 
 end
 

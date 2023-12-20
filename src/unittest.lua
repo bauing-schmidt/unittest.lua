@@ -165,6 +165,19 @@ function unittest.run (tests, result)
     return result
 end
 
+function unittest.files (files)
+    return function (result)
+        result = result or unittest.new_result ()
+
+        for i, filename in ipairs (files) do
+            local spec = dofile (filename)
+            unittest.suite (spec):run (result)
+        end
+
+        return result
+    end
+end
+
 unittest.assert = {}
 
 local function eq_tbls (r, s)
