@@ -4,19 +4,14 @@ local unittest = require 'unittest'
 local tests = {}
 
 function tests.test_assert_equals_numbers (recv)
-
-    local flag = pcall(unittest.assert.equals, 1, 1)
-    assert (flag)
-
+    assert (pcall(unittest.assert.equals, 1, 1))
 end
 
 function tests.test_assert_equals_tables (recv)
-  
     assert(pcall (unittest.assert.equals, {}, {}))
     assert(pcall (unittest.assert.equals, {1,2,3}, {1,2,3}))
     assert(pcall (unittest.assert.equals, {{}}, {{}}))
     assert(pcall (unittest.assert.equals, {[{}] = 'hello', [{}] = 'world'}, {[{}] = 'world', [{}] = 'hello'}))
-
 end
 
 function tests.test_assert_same (recv)
@@ -25,7 +20,6 @@ function tests.test_assert_same (recv)
 end
 
 function tests.test_assert_deny (recv)
-    
     assert(pcall (unittest.deny.equals, 1, 2))
     assert(pcall (unittest.deny.equals, {}, 1))
     assert(pcall (unittest.deny.equals, {1}, {1, 2}))
