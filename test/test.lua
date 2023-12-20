@@ -26,14 +26,14 @@ local traits = {
         
         assert (result:summary () == [[
 1 run, 1 failed.
-test_broken_method: /usr/local/share/lua/5.4/unittest.lua:82: explicitly raised.]])
+test_broken_method: /usr/local/share/lua/5.4/unittest.lua:85: explicitly raised.]])
 
     end,
 
     test_failedresultformatting = function (recv)
 
         local result = unittest.new_result ()
-        result:started ()
+        result:started (recv)
         result:failed ({name = 'test_dummy'}, 'no reason.')
         
         assert (result:summary () == [[
@@ -52,45 +52,21 @@ test_dummy: no reason.]])
 
         assert (result:summary () == [[
 2 run, 1 failed.
-test_broken_method: /usr/local/share/lua/5.4/unittest.lua:82: explicitly raised.]])
+test_broken_method: /usr/local/share/lua/5.4/unittest.lua:85: explicitly raised.]])
 
     end,
 
-    test_suite = function (recv)
-
-        local suite = unittest.suite (traits)
-        local result = unittest.new_result ()
-        suite:run (result)
-        assert (result:summary () == '6 run, 0 failed.')
-
-    end
-
 }
 
-local function case (name)
-    local c = unittest.case (name)
+function traits.test_suite (recv, result)
 
-    local __index = getmetatable (c).__index
+    local suite = unittest.suite (traits)
+    suite:run (result)
+    assert (result:summary () == '6 run, 0 failed.')
 
-    setmetatable (c, {
-
-        __index = function (recv, key) 
-            return traits[key] or __index (recv, key) 
-        end
-
-    })
-
-    return c
 end
 
-local cases = unittest.cases ()
-cases:append (case "test_template_method")
-cases:append (case "test_result")
-cases:append (case "test_failed_result")
-cases:append (case "test_failedresultformatting")
-cases:append (case "test_cases")
-cases:append (case "test_suite")
-local result = unittest.new_result ()
-cases:run (result)
-print (result:summary ())
 
+local result = unittest.new_result ()
+unittest.suite (traits):run (result)
+print (result:summary ())

@@ -5,12 +5,12 @@ unittest.traits = {
 
     testcase = {
         run = function (recv, result)
-                       
-            result:started ()
+
+            if not result:started (recv) then return end
 
             recv:setup ()
 
-            local succeed, msg = pcall (recv[recv.name], recv)   -- ignore returned values, just keep the succeed flag.
+            local succeed, msg = pcall (recv[recv.name], recv, result)   -- ignore returned values, just keep the succeed flag.
 
             if not succeed then result:failed (recv, msg) end
             
@@ -30,7 +30,12 @@ unittest.traits = {
             return totals
         end,
 
-        started = function (recv) recv.runcount = recv.runcount + 1 end,
+        started = function (recv, case)
+            if recv.seen[case.name] then return false end
+            recv.runcount = recv.runcount + 1
+            recv.seen[case.name] = true
+            return true
+        end,
 
         failed = function (recv, case, msg) 
             recv.failedcount = recv.failedcount + 1 
@@ -42,27 +47,25 @@ unittest.traits = {
     testcases = {
 
         append = function (recv, test) table.insert (recv.tests, test) end,
-        run = function (recv, result) 
+        run = function (recv, result)
             for k, test in pairs (recv.tests) do
                 test:run (result)
             end
         end
 
-    }
+    },
 
 }
 
 function unittest.case (name) 
 
-    local t = {}
+    local t = { name = name }
 
     setmetatable (t, {
 
         __index = function (recv, key) return unittest.traits.testcase[key] end
 
     })
-
-    t.name = name
 
     return t
 
@@ -99,7 +102,8 @@ function unittest.new_result ()
     local o = { 
         runcount = 0, 
         failedcount = 0, 
-        reasons = {} 
+        reasons = {},
+        seen = {},
     }
 
     setmetatable(o, {
@@ -111,15 +115,46 @@ end
 
 function unittest.cases ()
 
-    local o = {
-        tests = {}
-    }
+    local o = { tests = {} }
 
     setmetatable (o, {
         __index = function (recv, key) return unittest.traits.testcases[key] end
     })
 
     return o
+
+end
+
+
+local function case (name, trait)
+    local c = unittest.case (name)
+
+    local __index = getmetatable (c).__index
+
+    setmetatable (c, {
+
+        __index = function (recv, key) 
+            return trait[key] or __index (recv, key) 
+        end
+
+    })
+
+    return c
+end
+
+
+function unittest.suite (trait)
+
+
+    local cases = unittest.cases ()
+
+    for name, test_f in pairs (trait) do 
+        if (type(name) == 'string' and string.sub(name, 1, 4) == 'test') then
+            cases:append (case (name, trait))
+        end
+    end
+
+    return cases
 
 end
 
