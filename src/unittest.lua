@@ -167,7 +167,9 @@ function unittest.run (tests, result)
     return result
 end
 
-local function eq_tbls (r, s)
+unittest.assert = {}
+
+local function eq_tbls (r, s, eq)
 
     local used = {}
 
@@ -194,5 +196,20 @@ local function eq_tbls (r, s)
     return true
 
 end
+
+
+function unittest.assert.same (a, b) return a == b end
+
+function unittest.assert.equals (a, b)
+    local atype = type(a)
+    if atype == 'table' and atype == type(b) then 
+        return eq_tbls (a, b, unittest.assert.equals) 
+    else return unittest.assert.same (a, b) end
+end
+
+unittest.deny = {
+    equals = function (...) return not unittest.assert.equals (...) end,
+    same = function (...) return not unittest.assert.same (...) end
+}
 
 return unittest
