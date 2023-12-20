@@ -10,9 +10,9 @@ unittest.traits = {
 
             recv:setup ()
 
-            local succeed = pcall (recv[recv.name], recv)   -- ignore returned values, just keep the succeed flag.
+            local succeed, msg = pcall (recv[recv.name], recv)   -- ignore returned values, just keep the succeed flag.
 
-            if not succeed then result:failed () end
+            if not succeed then result:failed (recv, msg) end
             
             recv:teardown ()
         end,
@@ -23,12 +23,19 @@ unittest.traits = {
     testresult = {
 
         summary = function (recv)
-            return string.format ('%d run, %d failed.', recv.runcount, recv.failedcount)
+            local totals = string.format ('%d run, %d failed.', recv.runcount, recv.failedcount)
+            local reasons = {}
+            for name, msg in pairs (recv.reasons) do table.insert (reasons, name .. ': ' .. msg) end
+            if #reasons > 0 then totals = totals .. '\n' .. table.concat (reasons, '\n') end
+            return totals
         end,
 
         started = function (recv) recv.runcount = recv.runcount + 1 end,
 
-        failed = function (recv) recv.failedcount = recv.failedcount + 1 end
+        failed = function (recv, case, msg) 
+            recv.failedcount = recv.failedcount + 1 
+            recv.reasons[case.name] = msg
+        end
 
     },
 
@@ -72,7 +79,7 @@ function unittest.wasrun (name)
     end
 
     function t.test_broken_method (recv) 
-        error ()
+        error 'explicitly raised.'
     end
 
     function t.logstring (recv) return table.concat (recv.log, ' ') end
@@ -89,7 +96,11 @@ function unittest.wasrun (name)
 end
 
 function unittest.new_result ()
-    local o = { runcount = 0, failedcount = 0 }
+    local o = { 
+        runcount = 0, 
+        failedcount = 0, 
+        reasons = {} 
+    }
 
     setmetatable(o, {
         __index = function (recv, key) return unittest.traits.testresult[key] end

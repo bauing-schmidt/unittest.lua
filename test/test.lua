@@ -23,7 +23,10 @@ local traits = {
         local test = unittest.wasrun 'test_broken_method'
         local result = unittest.new_result ()
         test:run (result)
-        assert ('1 run, 1 failed.' == result:summary ())
+        
+        assert (result:summary () == [[
+1 run, 1 failed.
+test_broken_method: /usr/local/share/lua/5.4/unittest.lua:82: explicitly raised.]])
 
     end,
 
@@ -31,8 +34,11 @@ local traits = {
 
         local result = unittest.new_result ()
         result:started ()
-        result:failed ()
-        assert (result:summary () == '1 run, 1 failed.')
+        result:failed ({name = 'test_dummy'}, 'no reason.')
+        
+        assert (result:summary () == [[
+1 run, 1 failed.
+test_dummy: no reason.]])
 
     end,
 
@@ -43,7 +49,19 @@ local traits = {
         cases:append (unittest.wasrun 'test_broken_method')
         local result = unittest.new_result ()
         cases:run (result)
-        assert (result:summary () == '2 run, 1 failed.')
+
+        assert (result:summary () == [[
+2 run, 1 failed.
+test_broken_method: /usr/local/share/lua/5.4/unittest.lua:82: explicitly raised.]])
+
+    end,
+
+    test_suite = function (recv)
+
+        local suite = unittest.suite (traits)
+        local result = unittest.new_result ()
+        suite:run (result)
+        assert (result:summary () == '6 run, 0 failed.')
 
     end
 
@@ -71,6 +89,7 @@ cases:append (case "test_result")
 cases:append (case "test_failed_result")
 cases:append (case "test_failedresultformatting")
 cases:append (case "test_cases")
+cases:append (case "test_suite")
 local result = unittest.new_result ()
 cases:run (result)
 print (result:summary ())
