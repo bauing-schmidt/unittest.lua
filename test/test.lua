@@ -5,14 +5,15 @@ local traits = {
     
     test_template_method = function (recv)
         local test = unittest.wasrun 'test_method'
-        test:run ()
+        test:run (unittest.new_result ())
         assert (test:logstring () == 'setup test_method teardown')
     end,
 
     test_result = function (recv)
 
         local test = unittest.wasrun 'test_method'
-        local result = test:run ()
+        local result = unittest.new_result ()
+        test:run (result)
         assert ('1 run, 0 failed.' == result:summary ())
 
     end,
@@ -20,7 +21,8 @@ local traits = {
     test_failed_result = function (recv)
 
         local test = unittest.wasrun 'test_broken_method'
-        local result = test:run ()
+        local result = unittest.new_result ()
+        test:run (result)
         assert ('1 run, 1 failed.' == result:summary ())
 
     end,
@@ -31,6 +33,17 @@ local traits = {
         result:started ()
         result:failed ()
         assert (result:summary () == '1 run, 1 failed.')
+
+    end,
+
+    test_cases = function (recv)
+
+        local cases = unittest.cases ()
+        cases:append (unittest.wasrun 'test_method')
+        cases:append (unittest.wasrun 'test_broken_method')
+        local result = unittest.new_result ()
+        cases:run (result)
+        assert (result:summary () == '2 run, 1 failed.')
 
     end
 
@@ -52,7 +65,13 @@ local function case (name)
     return c
 end
 
-case "test_template_method":run ()
-case "test_result":run ()
-case "test_failed_result":run ()
-case "test_failedresultformatting":run ()
+local cases = unittest.cases ()
+cases:append (case "test_template_method")
+cases:append (case "test_result")
+cases:append (case "test_failed_result")
+cases:append (case "test_failedresultformatting")
+cases:append (case "test_cases")
+local result = unittest.new_result ()
+cases:run (result)
+print (result:summary ())
+
