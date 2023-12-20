@@ -33,9 +33,10 @@ test_broken_method: /usr/local/share/lua/5.4/unittest.lua:85: explicitly raised.
     test_failedresultformatting = function (recv)
 
         local result = unittest.new_result ()
-        result:started (recv)
+        local not_seen = result:started (recv)
         result:failed ({name = 'test_dummy'}, 'no reason.')
         
+        assert (not_seen)
         assert (result:summary () == [[
 1 run, 1 failed.
 test_dummy: no reason.]])
