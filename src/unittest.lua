@@ -167,7 +167,7 @@ end
 
 unittest.assert = {}
 
-local function eq_tbls (r, s, eq)
+local function eq_tbls (r, s)
 
     local used = {}
 
@@ -177,9 +177,9 @@ local function eq_tbls (r, s, eq)
 
         for kk, vv in pairs (s) do
 
-            if (not used[kk]) and eq (k, kk) then 
+            if (not used[kk]) and unittest.assert.equals (k, kk) then 
 
-                if eq (v, vv) then missing = false; used[kk] = true end
+                if unittest.assert.equals (v, vv) then missing = false; used[kk] = true end
 
             end
 
@@ -200,8 +200,7 @@ function unittest.assert.same (a, b) return a == b end
 
 function unittest.assert.equals (a, b)
     local atype = type(a)
-    if atype == 'table' and atype == type(b) then 
-        return eq_tbls (a, b, unittest.assert.equals) 
+    if atype == 'table' and atype == type(b) then return eq_tbls (a, b) 
     else return unittest.assert.same (a, b) end
 end
 
