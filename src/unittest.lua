@@ -158,9 +158,9 @@ function unittest.suite (trait)
 
 end
 
-function unittest.run (tests)
+function unittest.run (tests, result)
 
-    local result = unittest.new_result ()
+    result = result or unittest.new_result ()
     unittest.suite (tests):run (result)
     print (result:summary ())
 
