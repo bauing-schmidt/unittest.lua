@@ -61,7 +61,7 @@ function tests.test_suite (recv, result)
 
     local suite = unittest.suite (tests)
     suite:run (result)
-    unittest.assert.equals (result:summary (), '8 run, 0 failed.')
+    unittest.assert.equals (result:summary (), '9 run, 0 failed.')
 
 end
 
@@ -69,15 +69,21 @@ end
 function tests.test_api_run (recv, result)
 
     unittest.run (tests, result)
-    unittest.assert.equals (result:summary (), '8 run, 0 failed.')
+    unittest.assert.equals (result:summary (), '9 run, 0 failed.')
 
 end
 
 
-function tests.test_api_files (recv)
+function tests.test_api_files_assert (recv)
     unittest.files {'test/test-assert.lua'} (recv.result)
     print ('test/test-assert.lua: ' .. recv.result:summary ())
     unittest.assert.equals (recv.result:summary (), '7 run, 0 failed.')
+end
+
+function tests.test_api_files_learning (recv)
+    unittest.files {'test/test-learning.lua'} (recv.result)
+    print ('test/test-learning.lua: ' .. recv.result:summary ())
+    unittest.assert.equals (recv.result:summary (), '1 run, 0 failed.')
 end
 
 local result = unittest.run (tests)

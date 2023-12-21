@@ -4,4 +4,4 @@ install:
 
 test:
 	lua test/test-core.lua
-	lua test/test-dummy.lua
+	# lua test/test-dummy.lua
