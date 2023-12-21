@@ -251,6 +251,9 @@ Expected:
 Actual:
 %s]], tostring_recursive(b), tostring_recursive(a))) end
 
+function unittest.assert.istrue (a) return assert (a == true) end
+function unittest.assert.isfalse (a) return assert (a == false) end
+
 unittest.deny = {
     equals = function (...) return assert (not eq_functions.equals (...)) end,
     same = function (...) return assert (not eq_functions.same (...)) end
