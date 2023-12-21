@@ -5,7 +5,7 @@ local tests = {}
 
 function tests.test_a ()
 
-    unittest.assert.equals (1, 2)
+    unittest.assert.equals (1, {hello = 'world'})
 
 end
 

@@ -226,27 +226,30 @@ local function tostring_recursive (obj, indent)
         local s = indent
         s = s .. '{\n'
         for k, v in pairs (obj) do 
+            indent = indent .. '  '
             s = s .. indent .. tostring(k) .. ': \n'
-            s = s .. tostring_recursive (v, indent .. '  ')
+            indent = indent .. '  '
+            s = s .. tostring_recursive (v, indent)
         end
         s = s .. '\n}'
         return s
-    else return tostring (obj) end
+    elseif type(obj) == 'string' then return indent .. "'" .. obj .. "'"
+    else return indent .. tostring (obj) end
 
 end
 
 function unittest.assert.same (a, b) return assert (eq_functions.same (a, b), 
     string.format([[
 Expected:
-  %s
+%s
 Actual:
-  %s]], tostring_recursive(b), tostring_recursive(a))) end
+%s]], tostring_recursive(b), tostring_recursive(a))) end
 
 function unittest.assert.equals (a, b) return assert (eq_functions.equals (a, b),  string.format([[
 Expected:
-  %s
+%s
 Actual:
-  %s]], tostring_recursive(b), tostring_recursive(a))) end
+%s]], tostring_recursive(b), tostring_recursive(a))) end
 
 unittest.deny = {
     equals = function (...) return assert (not eq_functions.equals (...)) end,
