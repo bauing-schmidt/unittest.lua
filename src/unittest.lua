@@ -238,25 +238,53 @@ local function tostring_recursive (obj, indent)
 
 end
 
-function unittest.assert.same (a, b) return assert (eq_functions.same (a, b), 
-    string.format([[
+function unittest.assert.same (a)
+    return function (b)
+        return assert (eq_functions.same (a, b), string.format([[
 Expected:
 %s
 Actual:
-%s]], tostring_recursive(b), tostring_recursive(a))) end
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
 
-function unittest.assert.equals (a, b) return assert (eq_functions.equals (a, b),  string.format([[
+function unittest.assert.equals (...) 
+    local b = table.pack (...)
+    return function (...) 
+        local a = table.pack (...) 
+        return assert (eq_functions.eq_tbls (a, b),  string.format([[
 Expected:
 %s
 Actual:
-%s]], tostring_recursive(b), tostring_recursive(a))) end
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
 
-function unittest.assert.istrue (a) return assert (a == true) end
-function unittest.assert.isfalse (a) return assert (a == false) end
+unittest.assert.istrue = unittest.assert.equals (true)
+unittest.assert.isfalse = unittest.assert.equals (false)
 
-unittest.deny = {
-    equals = function (...) return assert (not eq_functions.equals (...)) end,
-    same = function (...) return assert (not eq_functions.same (...)) end
-}
+unittest.deny = {}
+
+function unittest.deny.same (a)
+    return function (b)
+        return assert (not eq_functions.same (a, b), string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
+
+function unittest.deny.equals (...) 
+    local b = table.pack (...)
+    return function (...) 
+        local a = table.pack (...) 
+        return assert (not eq_functions.eq_tbls (a, b),  string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
 
 return unittest
