@@ -28,6 +28,10 @@ function tests.test_string_compare ()
     unittest.assert.isfalse ('b' < 'a')
     unittest.assert.istrue ('aa' < 'ab')
 
+    local strings = { 'ba', 'a', 'hello' }
+    table.sort (strings)
+    unittest.assert.equals {'a', 'ba', 'hello'} (strings)
+
 end
 
 return tests
