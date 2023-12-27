@@ -21,4 +21,13 @@ function tests.test_string_byte ()
 
 end
 
+
+function tests.test_string_compare ()
+
+    unittest.assert.istrue ('a' < 'b')
+    unittest.assert.isfalse ('b' < 'a')
+    unittest.assert.istrue ('aa' < 'ab')
+
+end
+
 return tests

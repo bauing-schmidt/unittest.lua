@@ -86,7 +86,7 @@ end
 function tests.test_api_files_learning (recv)
     unittest.files {'test/test-learning.lua'} (recv.result)
     print ('test/test-learning.lua: ' .. recv.result:summary ())
-    unittest.assert.equals '2 run, 0 failed.' (recv.result:summary ())
+    unittest.assert.equals '3 run, 0 failed.' (recv.result:summary ())
 end
 
 local result = unittest.run (tests)
