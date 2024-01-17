@@ -7,21 +7,12 @@ function t:setup ()
     self.test = unittest.bootstrap.wasrun ()
 end
 
-function t:test_running ()
+function t:test_templatemethod ()
     local wr = self.test
 
-    assert (not wr.wasrun)
     wr:run {}
-    assert (wr.wasrun)
+    assert (wr:logstring () == 'setup test_method teardown')
 end
 
-function t:test_setup ()
-    local wr = self.test
 
-    assert (not wr.wassetup)
-    wr:run {}
-    assert (wr.wassetup)
-end
-
-unittest.bootstrap.case 'test_running':run (t)
-unittest.bootstrap.case 'test_setup':run (t)
+unittest.bootstrap.case 'test_templatemethod':run (t)
