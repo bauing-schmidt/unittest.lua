@@ -33,7 +33,8 @@ function unittest.traits.case:run (client)
     local r = unittest.bootstrap.result ()
     r:started ()
     if client.setup then client:setup () end    
-    client[self.name] (client)
+    local ok = pcall(client[self.name], client)
+    if not ok then r:failed () end
     if client.teardown then client:teardown () end
     return r
 end

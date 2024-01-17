@@ -35,5 +35,5 @@ end
 unittest.bootstrap.case 'test_templatemethod':run (t)
 unittest.bootstrap.case 'test_result':run (t)
 unittest.bootstrap.case 'test_failed_result_formatting':run (t)
--- unittest.bootstrap.case 'test_failed':run (t)
+unittest.bootstrap.case 'test_failed':run (t)
 
