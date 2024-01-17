@@ -11,27 +11,35 @@ local unittest = {
     bootstrap = {}
 }
 
-function unittest.traits.wasrun:test_method ()
-    self.wasrun = true
+setmetatable (unittest.traits.wasrun, {
+    __index = unittest.traits.case
+})
+
+function unittest.traits.case:run (client)
+    if client.setup then client:setup () end    
+    client[self.name] (client)
 end
 
-function unittest.traits.case:run (...)
-    self[self.name] (self, ...)
+function unittest.traits.wasrun:run (client)
+    function client.test_method (recv) self.wasrun = true end
+    function client.setup (recv) self.wassetup = true end
+    getmetatable (unittest.traits.wasrun).__index.run (self, client)
 end
 
 function unittest.metatables.wasrun:__index (key)
-    return unittest.traits.wasrun[key] or unittest.traits.case[key]
+    return unittest.traits.wasrun[key]
 end
 
 function unittest.metatables.case:__index (key)
     return unittest.traits.case[key]
 end
 
-function unittest.bootstrap.wasrun (name)
+function unittest.bootstrap.wasrun ()
 
-    local t = unittest.bootstrap.case (name, true)
+    local t = unittest.bootstrap.case 'test_method'
 
     t.wasrun = false
+    t.wassetup = false
 
     setmetatable (t, unittest.metatables.wasrun)
 
@@ -39,11 +47,11 @@ function unittest.bootstrap.wasrun (name)
 
 end
 
-function unittest.bootstrap.case (name, mt)
+function unittest.bootstrap.case (name)
 
     local t = { name = name }
 
-    if not mt then setmetatable (t, unittest.metatables.case) end
+    setmetatable (t, unittest.metatables.case)
 
     return t
 
