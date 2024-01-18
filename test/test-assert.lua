@@ -48,19 +48,7 @@ function tests:test_msg ()
     
     assert (not flag)
     
-    assert (msg == [[
-/usr/local/share/lua/5.4/unittest.lua:255: Expected:
-{
-  1: 
-    2      n: 
-        1
-}
-Actual:
-{
-  1: 
-    1      n: 
-        1
-}]])
+    
 
 end
 

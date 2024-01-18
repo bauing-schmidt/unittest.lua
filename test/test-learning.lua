@@ -3,7 +3,7 @@ local unittest = require 'unittest'
 
 local tests = {}
 
-function tests.test_empty_strings ()
+function tests:test_empty_strings ()
 
     unittest.assert.equals '' [[]]
     unittest.assert.equals '' [[
@@ -14,7 +14,7 @@ function tests.test_empty_strings ()
 
 end
 
-function tests.test_string_byte ()
+function tests:test_string_byte ()
 
     unittest.assert.equals (104, 101, 108, 108, 111) (string.byte ('hello', 1, 5))
     unittest.assert.equals (104, 101, 108, 108, 111) (string.byte ('hello', 1, -1))
@@ -22,7 +22,7 @@ function tests.test_string_byte ()
 end
 
 
-function tests.test_string_compare ()
+function tests:test_string_compare ()
 
     unittest.assert.istrue ('a' < 'b')
     unittest.assert.isfalse ('b' < 'a')

@@ -3,6 +3,14 @@ local unittest = require 'unittest'
 
 local t = {}
 
+local function count (t)
+    local c = 0
+    for name, _ in pairs (t) do 
+        if string.sub (name, 1, 4) == 'test' then c = c + 1 end
+    end
+    return c
+end
+
 function t:setup ()
     self.case = unittest.bootstrap.wasrun ()
     self.result = unittest.bootstrap.result ()
@@ -48,17 +56,25 @@ end
 
 function t:test_suite_automatically_discovered (result)
     unittest.bootstrap.suite (t):run (t, result)
-    assert (tostring (result) == '7 ran, 1 failed.')
+    assert (tostring (result) == string.format('%d ran, 0 failed.', count (t)))
+    print ('test/test-core: \t\t' .. tostring(result))
 end
 
-function t:test_suite_file ()
-    local tests = dofile 'test/test-assert.lua'
+function t:test_suite_file_assert ()
+    local filename = 'test/test-assert.lua'
+    local tests = dofile (filename)
     unittest.bootstrap.suite (tests):run (tests, self.result)
-    assert (tostring (self.result) == '6 ran, 0 failed.')
+    assert (tostring (self.result) == string.format('%d ran, 0 failed.', count (tests)))
+    print (filename .. ': \t\t' .. tostring(self.result))
+end
+
+function t:test_suite_file_learning ()
+    local filename = 'test/test-learning.lua'
+    local tests = dofile (filename)
+    unittest.bootstrap.suite (tests):run (tests, self.result)
+    assert (tostring (self.result) == string.format('%d ran, 0 failed.', count (tests)))
+    print (filename .. ': \t' .. tostring(self.result))
 end
 
 local result = unittest.suite (t)
-print (result)
-assert (tostring (result) == '7 ran, 1 failed.')
-
-
+assert (tostring (result) == string.format('%d ran, 0 failed.', count (t)))

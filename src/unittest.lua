@@ -170,4 +170,114 @@ function unittest.suite (tbl)
     return suite:run (tbl, unittest.bootstrap.result ())
 end
 
+
+unittest.assert = {}
+
+local eq_functions = {}
+
+function eq_functions.same (a, b) return a == b end
+
+function eq_functions.equals (a, b)
+    local atype = type(a)
+    if 'table' == atype and atype == type(b) then return eq_functions.eq_tbls (a, b)
+    else return eq_functions.same (a, b) end
+end
+
+function eq_functions.eq_tbls (r, s)
+
+    local used = {}
+
+    for k, v in pairs (r) do
+
+        local missing = true
+
+        for kk, vv in pairs (s) do
+
+            if (not used[kk]) and eq_functions.equals (k, kk) then 
+
+                if eq_functions.equals (v, vv) then missing = false; used[kk] = true end
+
+            end
+
+        end
+
+        if missing then return false end
+
+    end
+
+    for k, v in pairs (s) do if not used[k] then return false end end
+
+    return true
+
+end
+
+local function tostring_recursive (obj, indent)
+
+    indent = indent or ''
+
+    if type(obj) == 'table' then
+        local s = indent
+        s = s .. '{\n'
+        for k, v in pairs (obj) do 
+            indent = indent .. '  '
+            s = s .. indent .. tostring(k) .. ': \n'
+            indent = indent .. '  '
+            s = s .. tostring_recursive (v, indent)
+        end
+        s = s .. '\n}'
+        return s
+    elseif type(obj) == 'string' then return indent .. "'" .. obj .. "'"
+    else return indent .. tostring (obj) end
+
+end
+
+function unittest.assert.same (a)
+    return function (b)
+        return assert (eq_functions.same (a, b), string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
+
+function unittest.assert.equals (...) 
+    local b = table.pack (...)
+    return function (...) 
+        local a = table.pack (...) 
+        return assert (eq_functions.eq_tbls (a, b),  string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
+
+unittest.assert.istrue = unittest.assert.equals (true)
+unittest.assert.isfalse = unittest.assert.equals (false)
+
+unittest.deny = {}
+
+function unittest.deny.same (a)
+    return function (b)
+        return assert (not eq_functions.same (a, b), string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
+
+function unittest.deny.equals (...) 
+    local b = table.pack (...)
+    return function (...) 
+        local a = table.pack (...) 
+        return assert (not eq_functions.eq_tbls (a, b),  string.format([[
+Expected:
+%s
+Actual:
+%s]], tostring_recursive(b), tostring_recursive(a))) 
+    end
+end
+
 return unittest
