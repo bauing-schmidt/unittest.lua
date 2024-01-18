@@ -48,10 +48,17 @@ end
 
 function t:test_suite_automatically_discovered (result)
     unittest.bootstrap.suite (t):run (t, result)
-    assert (tostring (result) == '6 ran, 0 failed.')
+    assert (tostring (result) == '7 ran, 1 failed.')
+end
+
+function t:test_suite_file ()
+    local tests = dofile 'test/test-assert.lua'
+    unittest.bootstrap.suite (tests):run (tests, self.result)
+    assert (tostring (self.result) == '6 ran, 0 failed.')
 end
 
 local result = unittest.suite (t)
-assert (tostring (result) == '6 ran, 0 failed.')
-
 print (result)
+assert (tostring (result) == '7 ran, 1 failed.')
+
+
