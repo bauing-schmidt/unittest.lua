@@ -20,20 +20,24 @@ function t:test_result ()
 end
 
 function t:test_failed ()
-    local wr = unittest.bootstrap.wasrun_failing ()
+    local wr = unittest.bootstrap.wasrun_failing 'error_msg'
     local result = wr:run {}
-    assert (tostring (result) == '1 ran, 1 failed.')
+    assert (tostring (result) == [[
+1 ran, 1 failed.
+test_method_failing: /usr/local/share/lua/5.4/unittest.lua:49: error_msg]])
 end
 
 function t:test_failed_result_formatting ()
     local result = unittest.bootstrap.result ()
     result:started ()
-    result:failed ()
-    assert (tostring (result) == '1 ran, 1 failed.')
+    result:failed ('dummy', 'no reason')
+    assert (tostring (result) == [[
+1 ran, 1 failed.
+dummy: no reason]])
 end
 
-unittest.bootstrap.case 'test_templatemethod':run (t)
-unittest.bootstrap.case 'test_result':run (t)
-unittest.bootstrap.case 'test_failed_result_formatting':run (t)
-unittest.bootstrap.case 'test_failed':run (t)
+print(unittest.bootstrap.case 'test_templatemethod':run (t))
+print(unittest.bootstrap.case 'test_result':run (t))
+print(unittest.bootstrap.case 'test_failed_result_formatting':run (t))
+print(unittest.bootstrap.case 'test_failed':run (t))
 
