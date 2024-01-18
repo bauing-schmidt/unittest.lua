@@ -8,7 +8,7 @@ function tests:test_assert_equals_numbers ()
 end
 
 function tests:test_assert_equals_tables ()
-    assert(pcall (unittest.assert.equals {}, {1}), 'Two empty tables are equal.')
+    assert(pcall (unittest.assert.equals {}, {}), 'Two empty tables are equal.')
     assert(pcall (unittest.assert.equals {1,2,3}, {1,2,3}))
     assert(pcall (unittest.assert.equals {{}}, {{}}))
     assert(pcall (unittest.assert.equals {[{}] = 'hello', [{}] = 'world'}, {[{}] = 'world', [{}] = 'hello'}))

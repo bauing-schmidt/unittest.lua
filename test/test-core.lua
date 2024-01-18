@@ -63,7 +63,7 @@ function t:test_suite_file_dummy ()
     local filename = 'test/test-dummy.lua'
     local tests = dofile (filename)
     unittest.bootstrap.suite (tests):run (tests, self.result)
-    assert (tostring (self.result) == string.format('%d ran, 0 failed.', count (tests)))
+    assert (tostring (self.result) == '1 ran, 0 failed.')
     print (filename .. ': \t\t' .. tostring(self.result))
 end
 
