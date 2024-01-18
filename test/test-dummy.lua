@@ -3,13 +3,11 @@ local unittest = require 'unittest'
 
 local tests = {}
 
-function tests.test_a ()
+function tests:test_a ()
 
-    unittest.assert.equals (1, {hello = 'world'})
+    unittest.assert.equals (1, 1)
 
 end
 
-local result = unittest.run (tests)
-print (result:summary ())
 
 return tests
