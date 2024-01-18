@@ -25,7 +25,7 @@ function t:test_failed ()
     local result = wr:run ({}, self.result)
     assert (tostring (result) == [[
 1 ran, 1 failed.
-test_method_failing: /usr/local/share/lua/5.4/unittest.lua:55: error_msg]])
+test_method_failing: /usr/local/share/lua/5.4/unittest.lua:68: error_msg]])
 end
 
 function t:test_failed_result_formatting ()

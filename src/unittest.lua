@@ -1,18 +1,22 @@
 
 local unittest = {
+
     metatables = {
         wasrun = {},
         case = {},
         result = {},
         suite = {},
     },
+
     traits = {
         wasrun = {},
         case = {},
         result = {},
         suite = {},
     },
+
     bootstrap = {}
+    
 }
 
 setmetatable (unittest.traits.wasrun, {
@@ -20,16 +24,25 @@ setmetatable (unittest.traits.wasrun, {
 })
 
 function unittest.traits.result:started (name)
-    if not self.seen[name] then
-        self.seen[name] = true
-        self.runcount = self.runcount + 1
-        return true
-    else return false end    
+    if not self.seen[name] then self.seen[name] = true
+    else self.seen[name] = false end    
+    return self.seen[name]
 end
 
 function unittest.traits.result:failed (name, error_msg)
-    self.failedcount = self.failedcount + 1
     self.failure[name] = error_msg
+end
+
+function unittest.traits.result:failedcount ()
+    local failedcount = 0
+    for k, v in pairs (self.failure) do failedcount = failedcount + 1 end
+    return failedcount
+end
+
+function unittest.traits.result:runcount ()
+    local runcount = 0
+    for k, v in pairs (self.seen) do runcount = runcount + 1 end
+    return runcount
 end
 
 function unittest.traits.wasrun:logstring ()
@@ -84,9 +97,10 @@ function unittest.metatables.result:__tostring ()
     local failure = {}
     for k, v in pairs (self.failure) do table.insert (failure, string.format ('%s: %s', k, v)) end
     local sep = ''
-    if self.failedcount > 0 then sep = '\n' end
+    local fc = self:failedcount ()
+    if fc > 0 then sep = '\n' end
     return string.format ('%d ran, %d failed.%s%s', 
-                          self.runcount, self.failedcount, sep, table.concat (failure, '\n'))
+                          self:runcount(), fc, sep, table.concat (failure, '\n'))
 end
 
 function unittest.bootstrap.wasrun ()
@@ -127,7 +141,7 @@ end
 
 function unittest.bootstrap.result ()
 
-    local t = { runcount = 0, failedcount = 0, failure = {}, seen = {} }
+    local t = { failure = {}, seen = {} }
 
     setmetatable (t, unittest.metatables.result)
 
