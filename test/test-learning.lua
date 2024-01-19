@@ -14,6 +14,11 @@ function tests:test_empty_strings ()
 
 end
 
+function tests:test_nested_tables ()
+
+    unittest.assert.equals {first = { second = {1}}} {{third = {fourth = {five = 1}}}}
+end
+
 function tests:test_string_byte ()
 
     unittest.assert.equals (104, 101, 108, 108, 111) (string.byte ('hello', 1, 5))

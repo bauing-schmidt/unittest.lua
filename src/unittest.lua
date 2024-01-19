@@ -206,25 +206,27 @@ local function tostring_recursive(t, indent_orig)
     indent_orig = indent_orig or ''
     local indent = indent_orig or ''
     local chunks = {}
+    local istable = false
     
     if type(t) ~= 'table' then t = {t} 
     else 
-        table.insert (chunks, indent .. '{') 
+        table.insert (chunks, '{') 
         indent = indent .. '  '
+        istable = true
     end
     
     for k, v in pairs(t) do
         local chunk
         if type(v) == 'table' then
-            chunk = indent .. k .. ':\n' .. tostring_recursive(v, indent .. '  ')
+            chunk = indent .. k .. ' = ' .. tostring_recursive(v, indent)
         elseif type(v) == 'string' then
-            chunk = indent .. k .. ": '" .. tostring(v) .. "'"
+            chunk = indent .. k .. " = '" .. tostring(v) .. "'"
         else 
-            chunk = indent .. k .. ': ' .. tostring(v)
+            chunk = indent .. k .. ' = ' .. tostring(v)
         end
-        table.insert (chunks, chunk)
+        table.insert (chunks, chunk .. ',')
     end
-    if chunks[1] == '{' then table.insert (chunks, indent_orig .. '}') end
+    if istable then table.insert (chunks, indent_orig .. '}') end
     return table.concat (chunks, '\n')
 end
 
