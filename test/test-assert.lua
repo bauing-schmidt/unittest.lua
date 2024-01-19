@@ -47,12 +47,19 @@ function tests:test_msg ()
     local flag, msg = pcall (unittest.assert.equals (2), 1)
     
     assert (not flag)
-    
-    
+    assert (msg == [[
+
+Expected:
+{
+  1: 2
+  n: 1
+}
+Actual:
+{
+  1: 1
+  n: 1
+}]])
 
 end
-
---local result = unittest.run (tests)
--- print (result:summary ())
 
 return tests

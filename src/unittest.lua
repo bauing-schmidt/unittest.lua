@@ -208,24 +208,30 @@ function eq_functions.eq_tbls (r, s)
 
 end
 
-local function tostring_recursive (obj, indent)
-
-    indent = indent or ''
-
-    if type(obj) == 'table' then
-        local s = indent
-        s = s .. '{\n'
-        for k, v in pairs (obj) do 
-            indent = indent .. '  '
-            s = s .. indent .. tostring(k) .. ': \n'
-            indent = indent .. '  '
-            s = s .. tostring_recursive (v, indent)
+local function tostring_recursive(t, indent_orig)
+    indent_orig = indent_orig or ''
+    local indent = indent_orig or ''
+    local chunks = {}
+    
+    if type(t) ~= 'table' then t = {t} 
+    else 
+        table.insert (chunks, indent .. '{') 
+        indent = indent .. '  '
+    end
+    
+    for k, v in pairs(t) do
+        local chunk
+        if type(v) == 'table' then
+            chunk = indent .. k .. ':\n' .. tostring_recursive(v, indent .. '  ')
+        elseif type(v) == 'string' then
+            chunk = indent .. k .. ": '" .. tostring(v) .. "'"
+        else 
+            chunk = indent .. k .. ': ' .. tostring(v)
         end
-        s = s .. '\n}'
-        return s
-    elseif type(obj) == 'string' then return indent .. "'" .. obj .. "'"
-    else return indent .. tostring (obj) end
-
+        table.insert (chunks, chunk)
+    end
+    if chunks[1] == '{' then table.insert (chunks, indent_orig .. '}') end
+    return table.concat (chunks, '\n')
 end
 
 function unittest.assert.same (a)
@@ -238,15 +244,19 @@ Actual:
     end
 end
 
-function unittest.assert.equals (...) 
+function unittest.assert.equals (...)
     local b = table.pack (...)
     return function (...) 
         local a = table.pack (...) 
-        return assert (eq_functions.eq_tbls (a, b),  string.format([[
+        if not eq_functions.eq_tbls (a, b) then
+            error (string.format([[
+
 Expected:
 %s
 Actual:
-%s]], tostring_recursive(b), tostring_recursive(a))) 
+%s]], tostring_recursive(b), tostring_recursive(a)), 2)
+        end
+        return true
     end
 end
 
