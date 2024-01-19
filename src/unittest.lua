@@ -23,11 +23,13 @@ setmetatable (unittest.traits.wasrun, {
     __index = unittest.traits.case
 })
 
-function unittest.traits.result:started (name)
+    function unittest.traits.result:started (name)
+    -- Checks if the specified name has been seen once.
+    -- @param name The name to check.
+    -- @return True if the name has been seen once, false otherwise.
+
     if not self.seen[name] then self.seen[name] = 0 end
-
     self.seen[name] = self.seen[name] + 1
-
     return self.seen[name] == 1
 end
 
@@ -58,7 +60,6 @@ function unittest.traits.case:run (client, result)
         if not ok then result:failed (self.name, error_msg) end
         if client.teardown then client:teardown (self) end
     end
-    return result
 end
 
 function unittest.traits.suite:insert (case) table.insert (self.cases, case) end
@@ -89,8 +90,7 @@ function unittest.metatables.result:__tostring ()
     local sep = ''
     local fc = self:failedcount ()
     if fc > 0 then sep = '\n' end
-    return string.format ('%d ran, %d failed.%s%s', 
-                          self:runcount(), fc, sep, table.concat (failure, '\n'))
+    return string.format ('%d ran, %d failed.%s%s', self:runcount(), fc, sep, table.concat (failure, '\n'))
 end
 
 function unittest.bootstrap.wasrun (name)
@@ -161,12 +161,6 @@ function unittest.bootstrap.file (filename)
 
     return unittest.bootstrap.suite (tbl), tbl
 end
-
-function unittest.suite (tbl)
-    local suite = unittest.bootstrap.suite (tbl)
-    return suite:run (tbl, unittest.bootstrap.result ())
-end
-
 
 unittest.assert = {}
 
