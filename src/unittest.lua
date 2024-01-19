@@ -216,13 +216,16 @@ local function tostring_recursive(t, indent_orig)
     end
     
     for k, v in pairs(t) do
-        local chunk
+        local chunk = ''
+        local kstring = tostring (k)
+        if type (k) ~= 'string' then kstring = '[' .. kstring .. ']' end
+
         if type(v) == 'table' then
-            chunk = indent .. k .. ' = ' .. tostring_recursive(v, indent)
+            chunk = indent .. kstring .. ' = ' .. tostring_recursive(v, indent)
         elseif type(v) == 'string' then
-            chunk = indent .. k .. " = '" .. tostring(v) .. "'"
+            chunk = indent .. kstring .. " = '" .. tostring(v) .. "'"
         else 
-            chunk = indent .. k .. ' = ' .. tostring(v)
+            chunk = indent .. kstring .. ' = ' .. tostring(v)
         end
         table.insert (chunks, chunk .. ',')
     end
