@@ -206,9 +206,10 @@ local function tostring_recursive(t, indent_orig)
     indent_orig = indent_orig or ''
     local indent = indent_orig or ''
     local chunks = {}
-    local istable = false
-    
-    if type(t) ~= 'table' then t = {t} 
+    local istable = type(t) == 'table'
+
+    -- Check if the variable 't' is not a table and convert it into a table if necessary.
+    if not istable then t = {t}
     else 
         table.insert (chunks, '{') 
         indent = indent .. '  '
@@ -217,8 +218,15 @@ local function tostring_recursive(t, indent_orig)
     
     for k, v in pairs(t) do
         local chunk = ''
+
         local kstring = tostring (k)
-        if type (k) ~= 'string' then kstring = '[' .. kstring .. ']' end
+
+        if type (k) ~= 'string' then 
+            if type (k) == 'table' then kstring = tostring_recursive (k, indent)
+            else kstring = tostring (k) end
+            
+            kstring = '[' .. kstring .. ']' 
+        end
 
         if type(v) == 'table' then
             chunk = indent .. kstring .. ' = ' .. tostring_recursive(v, indent)
@@ -227,15 +235,19 @@ local function tostring_recursive(t, indent_orig)
         else 
             chunk = indent .. kstring .. ' = ' .. tostring(v)
         end
+        
         table.insert (chunks, chunk .. ',')
     end
+
     if istable then table.insert (chunks, indent_orig .. '}') end
+    
     return table.concat (chunks, '\n')
 end
 
 function unittest.assert.same (a)
     return function (b)
         return assert (eq_functions.same (a, b), string.format([[
+They are not the same object.
 Expected:
 %s
 Actual:
@@ -243,30 +255,33 @@ Actual:
     end
 end
 
-function unittest.assert.equals (...)
-    local b = table.pack (...)
-    return function (...) 
-        local a = table.pack (...) 
-        if not eq_functions.eq_tbls (a, b) then
-            error (string.format([[
-
+function unittest.assert.equals (msg)
+    local indent = ''
+    return function (...)
+        local b = table.pack (...)
+        return function (...) 
+            local a = table.pack (...) 
+            if not eq_functions.eq_tbls (a, b) then
+                error (string.format([[
+%s
 Expected:
 %s
 Actual:
-%s]], tostring_recursive(b), tostring_recursive(a)), 2)
+%s]], msg, tostring_recursive(b, indent), tostring_recursive(a, indent)), 2)
+            end
         end
-        return true
     end
 end
 
-unittest.assert.istrue = unittest.assert.equals (true)
-unittest.assert.isfalse = unittest.assert.equals (false)
+unittest.assert.istrue = unittest.assert.equals 'Should be true.' (true)
+unittest.assert.isfalse = unittest.assert.equals 'Should be false.' (false)
 
 unittest.deny = {}
 
 function unittest.deny.same (a)
     return function (b)
         return assert (not eq_functions.same (a, b), string.format([[
+They are the same object.
 Expected:
 %s
 Actual:
@@ -274,15 +289,18 @@ Actual:
     end
 end
 
-function unittest.deny.equals (...) 
-    local b = table.pack (...)
+function unittest.deny.equals (msg)    
     return function (...) 
-        local a = table.pack (...) 
-        return assert (not eq_functions.eq_tbls (a, b),  string.format([[
+        local b = table.pack (...)
+        return function (...) 
+            local a = table.pack (...) 
+            return assert (not eq_functions.eq_tbls (a, b),  string.format([[
+%s
 Expected:
 %s
 Actual:
-%s]], tostring_recursive(b), tostring_recursive(a))) 
+%s]], msg, tostring_recursive(b), tostring_recursive(a))) 
+        end
     end
 end
 
