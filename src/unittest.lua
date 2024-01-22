@@ -258,8 +258,8 @@ Actual:
     end
 end
 
-unittest.assert.istrue = unittest.assert.equals 'Should be true.' (true)
-unittest.assert.isfalse = unittest.assert.equals 'Should be false.' (false)
+function unittest.assert.istrue (msg) return unittest.assert.equals (msg) (true) end
+function unittest.assert.isfalse (msg) return unittest.assert.equals (msg) (false) end
 
 unittest.deny = {}
 

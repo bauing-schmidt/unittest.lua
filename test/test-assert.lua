@@ -77,19 +77,19 @@ function tests:test_assert_deny ()
 end
 
 function tests:test_assert_istrue ()
-    assert(pcall (unittest.assert.istrue, true))
-    assert(not pcall (unittest.assert.istrue, false))
-    assert(not pcall (unittest.assert.istrue, 4))
-    assert(not pcall (unittest.assert.istrue, 'hello'))
-    assert(not pcall (unittest.assert.istrue, function () end))
+    assert(pcall (unittest.assert.istrue '' , true))
+    assert(not pcall (unittest.assert.istrue '' , false))
+    assert(not pcall (unittest.assert.istrue '' , 4))
+    assert(not pcall (unittest.assert.istrue '' , 'hello'))
+    assert(not pcall (unittest.assert.istrue '' , function () end))
 end
 
 function tests:test_assert_isfalse ()
-    assert(pcall (unittest.assert.isfalse, false))
-    assert(not pcall (unittest.assert.isfalse, true))
-    assert(not pcall (unittest.assert.isfalse, 4))
-    assert(not pcall (unittest.assert.isfalse, 'hello'))
-    assert(not pcall (unittest.assert.isfalse, function () end))
+    assert(pcall (unittest.assert.isfalse '' , false))
+    assert(not pcall (unittest.assert.isfalse '' , true))
+    assert(not pcall (unittest.assert.isfalse '' , 4))
+    assert(not pcall (unittest.assert.isfalse '' , 'hello'))
+    assert(not pcall (unittest.assert.isfalse '' , function () end))
 end
 
 function tests:test_msg ()
