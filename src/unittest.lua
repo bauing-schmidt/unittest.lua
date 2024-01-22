@@ -83,13 +83,14 @@ end
 function unittest.metatables.suite:__index (key)
     return unittest.traits.suite[key]
 end
-
+--✓☑✗🗴✓✔
 function unittest.metatables.result:__tostring ()
-    local failure = {}
-    for k, v in pairs (self.failure) do table.insert (failure, string.format ('%s: %s', k, v)) end
+    local failure = {}    
+    for k, v in pairs (self.seen) do if not self.failure[k] then table.insert (failure, string.format ('✔ %s', k)) end end    
+    for k, v in pairs (self.failure) do table.insert (failure, string.format ('✗ %s: %s', k, v)) end
     local sep = ''
     local fc = self:failedcount ()
-    if fc > 0 then sep = '\n' end
+    if self:runcount () + fc > 0 then sep = '\n' end
     return string.format ('%d ran, %d failed.%s%s', self:runcount(), fc, sep, table.concat (failure, '\n'))
 end
 
