@@ -11,7 +11,7 @@ function tests:test_nested_tables ()
 
     local t = {1, 2, 3, {4, 5, 6, {7, 8, 9}}}
     local error_flag, msg = pcall(unittest.assert.equals 'Two different (nested) tables.' 
-        {[t] = { second = {1}}}, {{third = {fourth = {five = 1}}}})
+        {[t] = { second = {1}}}, {{third = {fourth = {five = 'hello'}}}})
 
     assert (not error_flag)
     assert (msg == [[
@@ -47,13 +47,13 @@ Actual:
     [1] = {
       third = {
         fourth = {
-          five = 1,
+          five = 'hello',
         },
       },
     },
   },
   n = 1,
-}]])
+}]], msg)
 end
 
 function tests:test_assert_equals_tables ()
@@ -107,7 +107,7 @@ Actual:
 {
   [1] = 1,
   n = 1,
-}]])
+}]], msg)
 
 end
 

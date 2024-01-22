@@ -202,46 +202,31 @@ function eq_functions.eq_tbls (r, s)
 
 end
 
-local function tostring_recursive(t, indent_orig)
-    indent_orig = indent_orig or ''
-    local indent = indent_orig or ''
+local function tostring_recursive(t, indent)
     local chunks = {}
-    local istable = type(t) == 'table'
+    indent = indent or ''
+    if type(t) == 'table' then
+        table.insert(chunks, indent .. '{')
+        for k, v in pairs(t) do
+            local kstring
+            if type(k) == 'table' then kstring = string.sub (tostring_recursive(k, indent .. '  '), #indent + 3, -1 )
+            else kstring = tostring(k) end
 
-    -- Check if the variable 't' is not a table and convert it into a table if necessary.
-    if not istable then t = {t}
-    else 
-        table.insert (chunks, '{') 
-        indent = indent .. '  '
-        istable = true
-    end
-    
-    for k, v in pairs(t) do
-        local chunk = ''
-
-        local kstring = tostring (k)
-
-        if type (k) ~= 'string' then 
-            if type (k) == 'table' then kstring = tostring_recursive (k, indent)
-            else kstring = tostring (k) end
+            if type(k) ~= 'string' then kstring = '[' .. kstring .. ']' end
             
-            kstring = '[' .. kstring .. ']' 
-        end
+            local vstring
+            if type(v) == 'string' then vstring = indent .. '  ' .. "'" .. v .. "'" 
+            else vstring =  tostring_recursive(v, indent .. '  ') end
 
-        if type(v) == 'table' then
-            chunk = indent .. kstring .. ' = ' .. tostring_recursive(v, indent)
-        elseif type(v) == 'string' then
-            chunk = indent .. kstring .. " = '" .. tostring(v) .. "'"
-        else 
-            chunk = indent .. kstring .. ' = ' .. tostring(v)
+            vstring = string.sub (vstring, #indent + 3, -1) .. ','
+
+            table.insert(chunks, indent .. '  ' .. kstring .. ' = ' .. vstring)
         end
-        
-        table.insert (chunks, chunk .. ',')
+        table.insert(chunks, indent .. '}')
+    else
+        table.insert(chunks, indent .. tostring(t))
     end
-
-    if istable then table.insert (chunks, indent_orig .. '}') end
-    
-    return table.concat (chunks, '\n')
+    return table.concat(chunks, '\n')
 end
 
 function unittest.assert.same (a)
