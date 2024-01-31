@@ -31,6 +31,14 @@ function tests:test_string_metatable ()
 
 end
 
+
+function tests:test_string_metatable_find ()
+
+    local hello = 'hello'
+    unittest.assert.equals '"l" should be at position 3 in "hello"' (3, 3) (hello:find 'l')  
+
+end
+
 function tests:test_string_find ()
 
     unittest.assert.equals '"l" is at position 3 in "hello"' (3, 3) (string.find('hello', 'l', 1, true))
