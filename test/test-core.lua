@@ -19,6 +19,11 @@ local function count_tests (tbl)
     return count
 end
 
+local function result_header (result_str)
+    local i = string.find (result_str, '\n', 1, true)
+    return string.sub (result_str, 1, i - 1)
+end
+
 function C.setup (self) self.result = unittest.bootstrap.result () end
 
 function C.test_running (self)
@@ -54,7 +59,7 @@ function C.test_suite (self)
     suite:insert (unittest.bootstrap.case 'test_running')
     suite:insert (unittest.bootstrap.case 'test_failing')
     suite:run (C, result)
-    assert (string.sub(tostring (result), 1, 16) == '2 ran, 0 failed.')
+    assert (result_header(tostring (result)) == '2 ran, 0 failed.')
 end
 
 function C.test_api_suite (self)
@@ -64,13 +69,13 @@ function C.test_api_suite (self)
         test_failing = C.test_failing,
     }
     local result = unittest.api.suite (S)
-    assert (string.sub(tostring (result), 1, 16) == '2 ran, 0 failed.')
+    assert (result_header(tostring (result)) == '2 ran, 0 failed.')
 end
 
 function C.test_suite_automatic_discovery (self, runner, result)
     local suite = unittest.bootstrap.suite (C)
     suite:run (C, result)    
-    assert (string.sub(tostring (result), 1, 16) == string.format('%d ran, 0 failed.', count_tests (C)))
+    assert (result_header(tostring (result)) == string.format('%d ran, 0 failed.', count_tests (C)))
 end
 
 
@@ -78,7 +83,7 @@ function C.test_file_assert (self)
     local filename = 'test/test-assert.lua'
     local suite, A = unittest.bootstrap.file (filename)
     suite:run (A, self.result)
-    -- assert (tostring (self.result) == string.format('%d ran, 0 failed.', count_tests (A)))
+    assert (result_header(tostring (self.result)) == string.format('%d ran, 0 failed.', count_tests (A)))
     print (filename .. ':\t\t' .. tostring (self.result))
 end
 
@@ -87,7 +92,7 @@ function C.test_file_learning (self)
     local filename = 'test/test-learning.lua'
     local suite, A = unittest.bootstrap.file (filename)
     suite:run (A, self.result)
-    -- assert (tostring (self.result) == string.format('%d ran, 0 failed.', count_tests (A)))
+    assert (result_header(tostring (self.result)) == string.format('%d ran, 0 failed.', count_tests (A)))
     print (filename .. ':\t\t' .. tostring (self.result))
 end
 
@@ -99,11 +104,13 @@ function C.test_file_dummy (self)
     print (filename .. ':\t\t' .. tostring (self.result))
 end
 
-local result = unittest.bootstrap.result ()
+local result = unittest.api.suite (C)
 
-unittest.bootstrap.suite (C):run (C, result)
+unittest.assert.equals 'Expected all successes.'
+    (string.format('%d ran, 0 failed.', count_tests (C)))
+    (result_header (tostring (result)))
 
 print ('test/test-core.lua:\t\t' .. tostring (result))
 
--- assert (tostring (result) == string.format('%d ran, 0 failed.', count_tests (C)))
+
 

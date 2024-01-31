@@ -31,6 +31,12 @@ function tests:test_string_metatable ()
 
 end
 
+function tests:test_string_find ()
+
+    unittest.assert.equals '"l" is at position 3 in "hello"' (3, 3) (string.find('hello', 'l', 1, true))
+
+end
+
 function tests:test_string_compare ()
 
     unittest.assert.istrue ('a' < 'b')
