@@ -15,7 +15,8 @@ local unittest = {
         suite = {},
     },
 
-    bootstrap = {}
+    bootstrap = {},
+    api = {},
     
 }
 
@@ -161,6 +162,12 @@ function unittest.bootstrap.file (filename)
     local tbl = dofile (filename)
 
     return unittest.bootstrap.suite (tbl), tbl
+end
+
+function unittest.api.suite (S, result)
+    result = result or unittest.bootstrap.result ()
+    unittest.bootstrap.suite (S):run (S, result)
+    return result
 end
 
 unittest.assert = {}

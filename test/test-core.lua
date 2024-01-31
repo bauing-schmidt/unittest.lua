@@ -57,6 +57,16 @@ function C.test_suite (self)
     assert (string.sub(tostring (result), 1, 16) == '2 ran, 0 failed.')
 end
 
+function C.test_api_suite (self)
+    local S = {
+        setup = C.setup, -- necessary to initialize the result object
+        test_running = C.test_running,
+        test_failing = C.test_failing,
+    }
+    local result = unittest.api.suite (S)
+    assert (string.sub(tostring (result), 1, 16) == '2 ran, 0 failed.')
+end
+
 function C.test_suite_automatic_discovery (self, runner, result)
     local suite = unittest.bootstrap.suite (C)
     suite:run (C, result)    

@@ -21,6 +21,15 @@ function tests:test_string_byte ()
 
 end
 
+function tests:test_string_metatable ()
+
+    local hello_mt = getmetatable 'hello'
+
+    unittest.assert.istrue 'Strings have a non-nil metatable' (hello_mt ~= nil)
+    unittest.assert.equals 'Strings have the same metatable' (hello_mt) (getmetatable 'world')
+    unittest.assert.equals 'Strings have the same metatable, even the empty string' (hello_mt) (getmetatable '')
+
+end
 
 function tests:test_string_compare ()
 
