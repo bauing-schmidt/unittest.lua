@@ -23,7 +23,7 @@ setmetatable (unittest.traits.wasrun, {
     __index = unittest.traits.case
 })
 
-    function unittest.traits.result:started (name)
+function unittest.traits.result:started (name)
     -- Checks if the specified name has been seen once.
     -- @param name The name to check.
     -- @return True if the name has been seen once, false otherwise.

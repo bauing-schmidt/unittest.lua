@@ -5,7 +5,10 @@ local T = {
     setup = function (self, runner) table.insert (runner.log, 'setup') end,
     test_method = function (self, runner) table.insert (runner.log, 'test_method') end,
     teardown = function (self, runner) table.insert (runner.log, 'teardown') end,
-    test_method_failing = function (self, runner) table.insert (runner.log, 'test_method'); error ('error_msg', 0) end,
+    test_method_failing = function (self, runner) 
+        table.insert (runner.log, 'test_method')
+        error ('error_msg', 0) -- 0: no stack trace
+    end,
 }
 
 local C = {}
