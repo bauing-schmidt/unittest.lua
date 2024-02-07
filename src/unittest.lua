@@ -50,6 +50,8 @@ function unittest.traits.result:runcount ()
     return runcount
 end
 
+function unittest.traits.result:beverbose () self.verbose = true end
+
 function unittest.traits.wasrun:logstring ()
     return table.concat (self.log, ' ')
 end
@@ -86,12 +88,16 @@ function unittest.metatables.suite:__index (key)
 end
 --✓☑✗🗴✓✔
 function unittest.metatables.result:__tostring ()
-    local failure = {}    
-    for k, v in pairs (self.seen) do if not self.failure[k] then table.insert (failure, string.format ('✔ %s', k)) end end    
-    for k, v in pairs (self.failure) do table.insert (failure, string.format ('✗ %s: %s', k, v)) end
+    local failure = {}
     local sep = ''
     local fc = self:failedcount ()
-    if self:runcount () + fc > 0 then sep = '\n' end
+    local rc = 0
+    if self.verbose then
+        rc = self:runcount ()
+        for k, v in pairs (self.seen) do if not self.failure[k] then table.insert (failure, string.format ('✔ %s', k)) end end
+    end
+    for k, v in pairs (self.failure) do table.insert (failure, string.format ('✗ %s: %s', k, v)) end
+    if rc + fc > 0 then sep = '\n' end
     return string.format ('%d ran, %d failed.%s%s', self:runcount(), fc, sep, table.concat (failure, '\n'))
 end
 

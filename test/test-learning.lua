@@ -47,14 +47,42 @@ end
 
 function tests:test_string_compare ()
 
-    unittest.assert.istrue ('a' < 'b')
-    unittest.assert.isfalse ('b' < 'a')
-    unittest.assert.istrue ('aa' < 'ab')
+    unittest.assert.istrue '' ('a' < 'b')
+    unittest.assert.isfalse '' ('b' < 'a')
+    unittest.assert.istrue '' ('aa' < 'ab')
 
     local strings = { 'ba', 'a', 'hello' }
     table.sort (strings)
     unittest.assert.equals 'They don\'t respect the alphanumeric ordering.' {'a', 'ba', 'hello'} (strings)
 
+end
+
+
+function tests:test_gc ()
+
+    local called = false
+    do 
+        local mt = { __gc = function (self) called = true end }
+        local s = setmetatable ({}, mt)
+    end
+
+    collectgarbage()
+
+    unittest.assert.istrue '' (called)
+end
+
+
+function tests:test_close ()
+
+    local called = false
+    local t = {}
+    do 
+        local mt = { __close = function (self, err) called = true end }
+        local s <close> = setmetatable ({}, mt)
+        t[1] = s
+    end
+
+    unittest.assert.istrue '' (called)
 end
 
 return tests
