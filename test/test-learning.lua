@@ -100,4 +100,22 @@ function tests:test_close_outside ()
     unittest.assert.isfalse '' (called)
 end
 
+function tests:test_function_mt ()
+
+    local mt = { 
+        __index = {
+            memo = 42
+        }
+    }
+
+    local function f (v)
+        return f.memo
+    end
+
+    debug.setmetatable (f, mt)
+
+    unittest.assert.equals 'Functions have the same metatable' (42) (f ())
+    
+end
+
 return tests
