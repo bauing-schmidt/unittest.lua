@@ -85,4 +85,19 @@ function tests:test_close ()
     unittest.assert.istrue '' (called)
 end
 
+
+function tests:test_close_outside ()
+
+    local called = false
+    
+    local mt = { __close = function (self, err) called = true end }
+    local s <close> = setmetatable ({}, mt)
+    
+    local function I (...) return ... end
+
+    do local t = s end
+
+    unittest.assert.isfalse '' (called)
+end
+
 return tests
